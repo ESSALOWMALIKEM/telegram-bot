@@ -25,7 +25,7 @@ def load_data():
     if not os.path.exists(DATA_FILE):
         initial_data = {
             "channels": [],
-            "success_message": "🎉 Tebrikler! VPN Kodunuz: YOUR_VPN_CODE_HERE",
+            "success_message": "CODE: ",
             "users": []
         }
         with open(DATA_FILE, 'w', encoding='utf-8') as file:
@@ -39,7 +39,7 @@ def load_data():
                 if "channels" not in data:
                     data["channels"] = []
                 if "success_message" not in data:
-                     data["success_message"] = "🎉 Tebrikler! VPN Kodunuz: YOUR_VPN_CODE_HERE"
+                     data["success_message"] = "CODE: "
                 if "users" not in data:
                     data["users"] = []
                 return data
@@ -53,7 +53,7 @@ def load_data():
             return load_data()
         except Exception as e:
             logger.error(f"Unexpected error loading {DATA_FILE}: {e}")
-            return {"channels": [], "success_message": "🎉 Tebrikler! VPN Kodunuz: YOUR_VPN_CODE_HERE", "users": []}
+            return {"channels": [], "success_message": "CODE: ", "users": []}
 
 def save_data(data):
     """Save data to channels.json."""
@@ -93,14 +93,14 @@ def start_command(message):
 
     if not channels:
         text = (
-             f"𝐒𝐀𝐋𝐀𝐌 {user_name}🖐️\n\n"
-             "📣 Şu anda sponsor kanal bulunmamaktadır. Daha sonra tekrar deneyin."
+             f" {user_name}🖐️\n\n"
+             "📣 Häzir sponsor kanallar ýok."
          )
         bot.send_message(message.chat.id, text)
     else:
         text = escape_markdown(
-            f"𝐒𝐀𝐋𝐀𝐌 {user_name}🖐️\n\n"
-            "📣𝐒𝐈𝐙 𝐀𝐒𝐀𝐊𝐃𝐀𝐊𝐘👇𝐕𝐈𝐏⚡𝐊𝐀𝐍𝐀𝐋𝐋𝐀𝐑𝐀 ⚜️𝐀𝐆𝐙𝐀 𝐁𝐎𝐋𝐌𝐀𝐊 𝐁𝐈𝐋𝐄𝐍 30 GUNLUK 𝐘𝐀𝐑𝐘𝐀𝐍 🔰𝐕𝐏𝐍 𝐊𝐎𝐃𝐔𝐍𝐘⚡ 𝐔𝐋𝐀𝐍𝐘𝐏 𝐁𝐈𝐋𝐄𝐑𝐒𝐈𝐍𝐈𝐙🔥"
+            f"{user_name}🖐️\n\n"
+            "📣VPN KODUNY ALMAK ISLESEŇIZ AŞAKDA GÖZRKEZILEN SPONSOR KANALLARA AGZA BOLUÑ"
         )
         for index, channel in enumerate(channels, 1):
             channel_username = channel.strip('@')
@@ -121,14 +121,14 @@ def check_subscription(call):
     user_id = call.from_user.id
     logger.info(f"User {user_id} triggered subscription check.")
 
-    bot.answer_callback_query(call.id, "Abonelikler kontrol ediliyor...")
+    bot.answer_callback_query(call.id, "Agzalyk barlanyar...")
 
     data = load_data()
     channels = data.get("channels", [])
-    success_message_text = data.get("success_message", "🎉 Tebrikler! VPN Kodunuz: YOUR_VPN_CODE_HERE")
+    success_message_text = data.get("success_message", "CODE: ")
 
     if not channels:
-         bot.edit_message_text("📢 Şu anda kontrol edilecek bir kanal bulunmuyor.", call.message.chat.id, call.message.message_id)
+         bot.edit_message_text("📢 Su wagt barlanjak kanal yok.", call.message.chat.id, call.message.message_id)
          return
 
     all_subscribed = True
@@ -195,26 +195,26 @@ def help_command(message):
 
     if user_id in ADMIN_IDS:
         help_text = """
-🤖 *BOT KOMUTLARI* 🤖
+🤖 *BOT KOMMANDARY* 🤖
 
 👨‍💻 *Admin Komutları*:
-/addch - Yeni kanal ekle
-/delch - Kanal çıkar
-/changevpn - VPN mesajını değiştir
-/public - Kanallara duyuru gönder
-/alert - Tüm kullanıcılara mesaj gönder
-/help - Bu yardım mesajını göster
+/addch - Kanal gosmak
+/delch - Kanal çykarmak
+/changevpn - VPN koduny çalsmak
+/public - Kanallara bildiris ibermek
+/alert - Hemme bot ulanyjaryna bildiris ibermek
+/help - Kömek
 
-👤 *Kullanıcı Komutları*:
-/start - Botu başlat
+👤 *User Kommandalary*:
+/start - Boty baslat
 """
     else:
         help_text = """
-🤖 *BOT KOMUTLARI* 🤖
+🤖 *BOT KOMMANDALARY* 🤖
 
-👤 *Kullanıcı Komutları*:
-/start - Botu başlat
-/help - Bu yardım mesajını göster
+👤 *User Kommandalary*:
+/start - Boty baslat
+/help - Kömek
 """
 
     bot.reply_to(message, help_text, parse_mode="Markdown")
@@ -223,10 +223,10 @@ def help_command(message):
 def alert_users(message):
     """Send message to all users (Admin only)"""
     if message.from_user.id not in ADMIN_IDS:
-        bot.reply_to(message, "⛔ Bu komutu kullanma yetkiniz yok.")
+        bot.reply_to(message, "⛔ Bu kommanda umybyñyz yok.")
         return
 
-    bot.reply_to(message, "📢 Tüm kullanıcılara göndermek istediğiniz mesajı yazın:")
+    bot.reply_to(message, "📢 Ahli ulanyjylara bildiris yazyn:")
     bot.register_next_step_handler(message, process_alert_message)
 
 def process_alert_message(message):
@@ -238,10 +238,10 @@ def process_alert_message(message):
     users = data.get("users", [])
 
     if not users:
-        bot.reply_to(message, "ℹ️ Henüz kayıtlı kullanıcı yok.")
+        bot.reply_to(message, "ℹ️ Häzir saklanan ulanyjy yok.")
         return
 
-    msg = bot.reply_to(message, f"📢 {len(users)} kullanıcıya mesaj gönderiliyor...")
+    msg = bot.reply_to(message, f"📢 {len(users)} ulanyja bildiris iberilyar...")
 
     success_count = 0
     failed_count = 0
@@ -252,14 +252,14 @@ def process_alert_message(message):
             success_count += 1
             time.sleep(0.1)  # Flood önleme
         except Exception as e:
-            logger.error(f"Kullanıcı {user_id} mesaj gönderilemedi: {e}")
+            logger.error(f"Ulanyjy {user_id} iberilmedi: {e}")
             failed_count += 1
 
     report = f"""
-✅ Mesaj gönderme tamamlandı:
+✅ Bildiris isleri tamam :
 
-Başarılı: {success_count}
-Başarısız: {failed_count}
+Başarnykly: {success_count}
+Başarnyksyz: {failed_count}
 """
     bot.edit_message_text(report, msg.chat.id, msg.message_id)
 
@@ -267,10 +267,10 @@ Başarısız: {failed_count}
 def add_channel(message):
     """Add channel (Admin)"""
     if message.from_user.id not in ADMIN_IDS:
-        bot.reply_to(message, "⛔ Bu komutu kullanma yetkiniz yok.")
+        bot.reply_to(message, "⛔ Bu kommandany ulanmaga ukybyñyz yok.")
         return
 
-    bot.reply_to(message, "➕ Eklemek istediğiniz kanalın @kullanıcı adını yazın (Örnek: @kanal_adi):")
+    bot.reply_to(message, "➕ Gosmak isleyan kanalyn @user yazyn (Mes: @kanal_ady):")
     bot.register_next_step_handler(message, process_add_channel)
 
 def process_add_channel(message):
@@ -279,7 +279,7 @@ def process_add_channel(message):
     user_id = message.from_user.id
 
     if not new_channel.startswith("@"):
-        bot.reply_to(message, "❌ Geçersiz format! @kanal_adi şeklinde girin.")
+        bot.reply_to(message, "❌ Nädogry format! @kanal_ady yaly girin.")
         return
 
     data = load_data()
@@ -287,7 +287,7 @@ def process_add_channel(message):
     try:
         bot.get_chat(new_channel)
     except Exception as e:
-        bot.reply_to(message, f"❌ Kanal bulunamadı veya erişilemiyor: {e}")
+        bot.reply_to(message, f"❌ Kanal tapylmady: {e}")
         return
 
     if new_channel not in data["channels"]:
@@ -295,16 +295,16 @@ def process_add_channel(message):
         save_data(data)
         bot.reply_to(message, f"✅ {new_channel} başarıyla eklendi.")
     else:
-        bot.reply_to(message, f"ℹ️ {new_channel} zaten listede var.")
+        bot.reply_to(message, f"ℹ️ {new_channel} aslam bar.")
 
 @bot.message_handler(commands=['delch'])
 def remove_channel(message):
     """Remove channel (Admin)"""
     if message.from_user.id not in ADMIN_IDS:
-        bot.reply_to(message, "⛔ Bu komutu kullanma yetkiniz yok.")
+        bot.reply_to(message, "⛔ Bu kommandany ulanmaga ukybynyz yok.")
         return
 
-    bot.reply_to(message, "➖ Çıkarmak istediğiniz kanalın @kullanıcı adını yazın:")
+    bot.reply_to(message, "➖ Cykarmak isleyan ulanyjynyzy yazyn @ulanyjyady:")
     bot.register_next_step_handler(message, process_remove_channel)
 
 def process_remove_channel(message):
@@ -317,16 +317,16 @@ def process_remove_channel(message):
         save_data(data)
         bot.reply_to(message, f"✅ {channel_to_remove} başarıyla çıkarıldı.")
     else:
-        bot.reply_to(message, f"ℹ️ {channel_to_remove} listede bulunamadı.")
+        bot.reply_to(message, f"ℹ️ {channel_to_remove} listde yok.")
 
 @bot.message_handler(commands=['changevpn'])
 def change_success_message(message):
     """Change success message (Admin)"""
     if message.from_user.id not in ADMIN_IDS:
-        bot.reply_to(message, "⛔ Bu komutu kullanma yetkiniz yok.")
+        bot.reply_to(message, "⛔ Bu kommandany ulanmaga ukybynyz yok.")
         return
 
-    bot.reply_to(message, "🔑 Yeni başarı mesajını yazın (Markdown desteklenir):")
+    bot.reply_to(message, "🔑 Täze açar kody (Markdown goldanyar):")
     bot.register_next_step_handler(message, process_change_success_message)
 
 def process_change_success_message(message):
@@ -335,39 +335,36 @@ def process_change_success_message(message):
     data = load_data()
     data["success_message"] = new_message
     save_data(data)
-    bot.reply_to(message, "✅ Başarı mesajı güncellendi.")
+    bot.reply_to(message, "✅ VPN kody tayyar.")
 
 @bot.message_handler(commands=['public'])
 def public_to_channels(message):
     """Send announcement to channels (Admin)"""
     if message.from_user.id not in ADMIN_IDS:
-        bot.reply_to(message, "⛔ Bu komutu kullanma yetkiniz yok.")
+        bot.reply_to(message, "⛔ Bu kommandany ulanmaga ukybynyz yok.")
         return
 
     data = load_data()
     channels = data.get("channels", [])
 
     if not channels:
-        bot.reply_to(message, "ℹ️ Hiç kanal bulunmamaktadır.")
+        bot.reply_to(message, "ℹ️ Hiç kanal yok.")
         return
 
     text = """
-💁‍♂ 𝗩𝗣𝗡-𝗗𝗔𝗡 𝗞𝗢𝗦𝗘𝗡𝗬𝗔𝗡 𝗔𝗚𝗭𝗔𝗟𝗔𝗥
-𝗕𝗢𝗧𝗬𝗠𝗬𝗭𝗔 𝗧𝗔𝗭𝗘𝗝𝗘 𝟭𝟬-𝗚𝗨𝗡𝗟𝗜𝗞
-𝗦𝗘𝗥𝗩𝗘𝗥𝗟𝗔𝗥 𝗚𝗢𝗬𝗬𝗢𝗟𝗗𝗬 💥
+PUBG ÜÇIN YARYP DURAN VPN KODY GOYULDY
 
-🚀 𝗔𝗡𝗗𝗥𝗢𝗜𝗗 - 𝗜𝗢𝗦 - 𝗣𝗖 - 𝗪𝗘
-𝗧𝗘𝗟𝗘𝗚𝗥𝗔𝗠 𝗣𝗥𝗢𝗫𝗬🤗
-🫵 𝗦𝗜𝗭 𝗦𝗔𝗬𝗟𝗔𝗣 𝗔𝗟𝗬𝗣 𝗕𝗜𝗟𝗘𝗥𝗦𝗜𝗡𝗜𝗭 🔥
+30 - 40 PING BERYAN KOT DUR BOTDA
+
+GIRIP ALYN AGZALARYM 
+
+AKTIV AGZALAR UCIN
 """
     markup = types.InlineKeyboardMarkup(row_width=2)
     bot_username = bot.get_me().username
     markup.add(types.InlineKeyboardButton("Android 🇹🇲", url=f"https://t.me/{bot_username}?start=android"))
-    markup.add(types.InlineKeyboardButton("Ios 🇹🇲", url=f"https://t.me/{bot_username}?start=ios"))
-    markup.add(types.InlineKeyboardButton("Windows 🇹🇲", url=f"https://t.me/{bot_username}?start=windows"))
-    markup.add(types.InlineKeyboardButton("Telegram Proxy 🇹🇲", url=f"https://t.me/{bot_username}?start=proxy"))
 
-    msg = bot.reply_to(message, f"📢 {len(channels)} kanala duyuru gönderiliyor...")
+    msg = bot.reply_to(message, f"📢 {len(channels)} kanala iberilyar...")
 
     success_count = 0
     failed_count = 0
@@ -378,7 +375,7 @@ def public_to_channels(message):
             success_count += 1
             time.sleep(0.1)
         except Exception as e:
-            logger.error(f"Kanal {channel} mesaj gönderilemedi: {e}")
+            logger.error(f"Kanal {channel} hat iberilmedii: {e}")
             failed_count += 1
 
     report = f"""
@@ -400,12 +397,12 @@ def handle_unknown_commands(message):
 
         for admin_id in ADMIN_IDS:
             try:
-                forward_text = f"⚠️ Bilinmeyen komut:\n\nKullanıcı ID: {user_id}\nKomut: {text}"
+                forward_text = f"⚠️ Bilinmeyan kommanda :\n\nUser ID: {user_id}\nKommand: {text}"
                 bot.send_message(admin_id, forward_text)
             except Exception as e:
-                logger.error(f"Admin {admin_id} mesaj iletilemedi: {e}")
+                logger.error(f"Admin {admin_id} mesaj gowusmady: {e}")
 
-        bot.reply_to(message, "⛔ Bilinmeyen komut. /help komutunu kullanarak mevcut komutları görebilirsiniz.")
+        bot.reply_to(message, "⛔ Bilinmeyan kommanda siz dine /help ulanyp bilersiniz.")
 
 # Start the bot
 logger.info("Bot başlatılıyor...")
