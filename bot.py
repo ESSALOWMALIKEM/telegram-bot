@@ -11,7 +11,7 @@ logging.basicConfig(level=logging.INFO,
 logger = logging.getLogger(__name__)
 
 # Configuration
-TOKEN = os.getenv("TELEGRAM_BOT_TOKEN") or '7588712034:AAGh-0ffrnS9Dq1e-8JK2l3A_uJWSHhOkcM'
+TOKEN = os.getenv("TELEGRAM_BOT_TOKEN") or '7856912713:AAHs1OQ4N5bQ-qCEdBhd_wl-mfOBEGCW66U'
 bot = telebot.TeleBot(TOKEN)
 
 # Telegram admin IDs
